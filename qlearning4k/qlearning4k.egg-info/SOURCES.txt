@@ -1,0 +1,14 @@
+setup.py
+qlearning4k/__init__.py
+qlearning4k/agent.py
+qlearning4k/memory.py
+qlearning4k.egg-info/PKG-INFO
+qlearning4k.egg-info/SOURCES.txt
+qlearning4k.egg-info/dependency_links.txt
+qlearning4k.egg-info/requires.txt
+qlearning4k.egg-info/top_level.txt
+qlearning4k/games/__init__.py
+qlearning4k/games/catch.py
+qlearning4k/games/game.py
+qlearning4k/games/snake.py
+qlearning4k/games/bbox_game.py

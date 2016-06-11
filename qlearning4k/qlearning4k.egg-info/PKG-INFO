@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: qlearning4k
+Version: 0.0.1
+Summary: Q-learning for Keras
+Home-page: https://github.com/farizrahman4u/qlearning4k
+Author: Fariz Rahman
+Author-email: farizrahman4u@gmail.com
+License: GNU GPL v2
+Description: UNKNOWN
+Platform: UNKNOWN
