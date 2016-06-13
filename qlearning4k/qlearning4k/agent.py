@@ -58,6 +58,7 @@ class Agent:
 
 	def train(self, game, nb_epoch=1000, batch_size=50, gamma=0.9, epsilon=[1., .1], epsilon_rate=0.5, reset_memory=False):
 		self.check_game_compatibility(game)
+		print ("here")
 		if type(epsilon)  in {tuple, list}:
 			delta =  ((epsilon[0] - epsilon[1]) / (nb_epoch * epsilon_rate))
 			final_epsilon = epsilon[1]
@@ -78,9 +79,13 @@ class Agent:
 			while not game_over:
 				if np.random.random() < epsilon:
 					a = int(np.random.randint(game.nb_actions))
+					print "random"
 				else:
 					q = model.predict(S)
 					a = int(np.argmax(q[0]))
+					action_count = game.get_action_count
+					if (action_count() % 100000) == 0:
+						print "q: ", q
 				game.play(a)
 				r = game.get_score()
 				S_prime = self.get_game_data(game)
@@ -98,7 +103,7 @@ class Agent:
 				epsilon -= delta
 			print("Epoch {:03d}/{:03d} | Loss {:.4f} | Epsilon {:.2f} | Win count {}".format(epoch + 1, nb_epoch, loss, epsilon, win_count))
 
-	def play(self, game, nb_epoch=10, epsilon=0., visualize=True):
+	def play(self, game, nb_epoch=1, epsilon=0., visualize=False):
 		self.check_game_compatibility(game)
 		model = self.model
 		win_count = 0

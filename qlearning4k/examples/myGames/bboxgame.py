@@ -1,5 +1,5 @@
 __author__ = "Carl Allen"
-
+import datetime as dt
 import numpy as np
 import interface as bbox
 from qlearning4k.games.game import Game
@@ -10,6 +10,10 @@ class Bboxgame(Game):
 	def __init__(self):
 		#self.grid_size = grid_size
 		self.won = False
+		self.action_count =0
+		self.time = dt.datetime.now()
+		self.last_score = 0
+		self.action_score = 0
 		self.reset()
 
 	def reset(self):
@@ -29,8 +33,18 @@ class Bboxgame(Game):
 	def nb_actions(self):
 		return bbox.get_num_of_actions()
 
-	def play(self, action):
+	@property
+	def get_action_count(self):
+		return self.action_count
+
+	def play(self, action, report_action=False):
 		#state = self.state
+		self.action_count = self.action_count + 1
+		if report_action:
+			print
+			print
+			print ("PRE ACTN#%d: time=%fs   total score=%f" % (self.action_count, (dt.datetime.now() - self.time).seconds, bbox.get_score()))
+			self.time = dt.datetime.now()
 		self.has_next = bbox.do_action(action)
 		#if action == 0:
 		#	action = -1
@@ -64,7 +78,13 @@ class Bboxgame(Game):
 		#		return -1
 		#else:
 		#	return 0
-		return bbox.get_score()
+		#if (self.action_count <=10): #% 10000) == 0:
+		#print	 "                                                                                                                              CURR_SCORE: %f; LAST_SCORE %f" % (bbox.get_score(), self.last_score),
+		self.action_score = bbox.get_score() - self.last_score
+		self.last_score = bbox.get_score()
+		#if (self.action_count <=10): #% 10000) == 0:
+		#print "   ACT SCORE: %f" % self.action_score
+		return min(1, max(0,self.action_score))
 
 	def is_over(self):
 		#if self.state[0, 0] == self.grid_size-1:
@@ -75,4 +95,5 @@ class Bboxgame(Game):
 
 	def is_won(self):
 		#fruit_row, fruit_col, basket = self.state[0]
+		bbox.finish(verbose=1)
 		return self.get_score>0 #fruit_row == self.grid_size-1 and abs(fruit_col - basket) <= 1
