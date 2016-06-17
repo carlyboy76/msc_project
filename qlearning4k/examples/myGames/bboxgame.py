@@ -3,7 +3,7 @@ import datetime as dt
 import numpy as np
 import interface as bbox
 from qlearning4k.games.game import Game
-
+import ipdb
 
 class Bboxgame(Game):
 
@@ -78,22 +78,22 @@ class Bboxgame(Game):
 		#		return -1
 		#else:
 		#	return 0
-		#if (self.action_count <=10): #% 10000) == 0:
-		#print	 "                                                                                                                              CURR_SCORE: %f; LAST_SCORE %f" % (bbox.get_score(), self.last_score),
 		self.action_score = bbox.get_score() - self.last_score
 		self.last_score = bbox.get_score()
-		#if (self.action_count <=10): #% 10000) == 0:
-		#print "   ACT SCORE: %f" % self.action_score
-		return min(1, max(0,self.action_score))
+		return self.action_score # 0 if self.action_score <= 0 else 10 # min(1, max(0,self.action_score))
+
+	def get_total_score(self):
+		return self.last_score
 
 	def is_over(self):
 		#if self.state[0, 0] == self.grid_size-1:
 		#	return True
 		#else:
 		#	return False
-		return self.has_next == 0
+		return (self.has_next == 0) # or (self.action_count == 5) # TERMINATION ADDED BY ME *******
 
 	def is_won(self):
 		#fruit_row, fruit_col, basket = self.state[0]
-		bbox.finish(verbose=1)
-		return self.get_score>0 #fruit_row == self.grid_size-1 and abs(fruit_col - basket) <= 1
+		bbox.reset_level() # bbox.finish(verbose=1)
+		self.action_count = 0
+		return bbox.get_score() > 0 #fruit_row == self.grid_size-1 and abs(fruit_col - basket) <= 1

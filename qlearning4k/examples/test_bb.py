@@ -13,14 +13,16 @@ nb_frames = 1
 model = Sequential()
 model.add(Flatten(input_shape=(nb_frames, grid_size)))
 #model.add(Dense(hidden_size, activation='relu'))
-model.add(Dense(hidden_size, activation='relu'))
+#model.add(Dense(hidden_size, activation='relu'))
 model.add(Dense(4))
-model.compile(sgd(lr=.2), "mse")
+model.compile(sgd(lr=.02), "mse")
+
+print "model summary: ", model.summary()
 
 game = Bboxgame()
 #ipdb.set_trace()
 agent = Agent(model=model)
 print "training"
-agent.train(game, batch_size=50, nb_epoch=3, epsilon=.1)
-print "playing"
-agent.play(game)
+agent.train(game, batch_size=1, nb_epoch=5, epsilon=.1)
+#print "playing"
+#agent.play(game)
