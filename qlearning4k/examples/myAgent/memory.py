@@ -30,9 +30,9 @@ class ExperienceReplay(Memory):
         if self.memory_size > 0 and len(self.memory) > self.memory_size:
             self.memory.pop(0)
 
-    def get_batch(self, model, batch_size, gamma=0.9, print_it=False):
+    def get_batch(self, model, batch_size, gamma=0.9): #, print_it=False):
         if self.fast:
-            return self.get_batch_fast(model, batch_size, gamma, print_it)
+            return self.get_batch_fast(model, batch_size, gamma) #, print_it)
         if len(self.memory) < batch_size:
             batch_size = len(self.memory)
         nb_actions = model.output_shape[-1]
@@ -98,13 +98,13 @@ class ExperienceReplay(Memory):
         import theano.tensor as T
         return K.equal(K.reshape(seq, (-1, 1)), T.arange(num_classes))
 
-    def get_batch_fast(self, model, batch_size, gamma, print_it=False):
+    def get_batch_fast(self, model, batch_size, gamma): #, print_it=False):
         if len(self.memory) < batch_size:
             return None
         samples = np.array(sample(self.memory, batch_size))
-	if print_it:
+	'''if print_it:
 		print #("[memory] batch_size: %d; memory size: %d" % (batch_size, len(self.memory)))
-		#print "samples: ", samples
+		#print "samples: ", samples '''
         if not hasattr(self, 'batch_function'):
             self.set_batch_function(model, self.input_shape, batch_size, model.output_shape[-1], gamma)
         S, targets, X, Y, Qsa, delta = self.batch_function([samples])

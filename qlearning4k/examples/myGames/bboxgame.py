@@ -3,11 +3,11 @@ import datetime as dt
 import numpy as np
 import interface as bbox
 from qlearning4k.games.game import Game
-import ipdb
+#import ipdb
 
 class Bboxgame(Game):
 
-	def __init__(self):
+	def __init__(self, max_moves=1214494):
 		#self.grid_size = grid_size
 		self.won = False
 		self.action_count =0
@@ -15,6 +15,7 @@ class Bboxgame(Game):
 		self.last_score = 0
 		self.action_score = 0
 		self.reset()
+		self.max_moves=max_moves
 
 	def reset(self):
 		#n = np.random.randint(0, self.grid_size-1, size=1)
@@ -39,8 +40,11 @@ class Bboxgame(Game):
 
 	def play(self, action, report_action=False):
 		#state = self.state
+
+		printing = False	# SET PRINTING HERE *********************************************************************
+
 		self.action_count = self.action_count + 1
-		if report_action:
+		if report_action and printing:
 			print
 			print
 			print ("PRE ACTN#%d: time=%fs   total score=%f" % (self.action_count, (dt.datetime.now() - self.time).seconds, bbox.get_score()))
@@ -80,7 +84,10 @@ class Bboxgame(Game):
 		#	return 0
 		self.action_score = bbox.get_score() - self.last_score
 		self.last_score = bbox.get_score()
-		return self.action_score # 0 if self.action_score <= 0 else 10 # min(1, max(0,self.action_score))
+		return self.action_score #-1 if self.action_score < 0 else (1 if self.action_score > 0 else 0) # min(1, max(0,self.action_score))
+
+	def get_max_moves(self):
+		return self.max_moves #100 #1214494
 
 	def get_total_score(self):
 		return self.last_score
@@ -90,10 +97,13 @@ class Bboxgame(Game):
 		#	return True
 		#else:
 		#	return False
-		return (self.has_next == 0) # or (self.action_count == 5) # TERMINATION ADDED BY ME *******
+		return (self.has_next == 0) or (self.action_count == self.get_max_moves()) # TERMINATION ADDED BY ME *******
 
 	def is_won(self):
 		#fruit_row, fruit_col, basket = self.state[0]
+		final_score = bbox.get_score()
 		bbox.reset_level() # bbox.finish(verbose=1)
+
+		self.last_score = 0
 		self.action_count = 0
-		return bbox.get_score() > 0 #fruit_row == self.grid_size-1 and abs(fruit_col - basket) <= 1
+		return final_score > 0 #fruit_row == self.grid_size-1 and abs(fruit_col - basket) <= 1
