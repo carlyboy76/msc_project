@@ -1,0 +1,40 @@
+import cython
+from cpython cimport bool
+
+cdef class Game:
+	
+	def inline __init__(self):
+		self.reset()
+
+	#@property
+	cdef inline char* name(self):
+		return "Game"
+	
+	#@property
+	cdef inline int nb_actions(self):
+		return 0
+	
+	cdef inline reset(self):
+		pass
+
+	cdef inline play(self, action):
+		pass
+
+	cdef inline float* get_state(self):
+		#cdef float *array
+		return NULL
+
+	cdef inline float get_score(self):
+		return 0
+
+	cdef inline bool is_over(self):
+		return False
+
+	cdef inline bool is_won(self):
+		return False
+
+	cdef inline float* get_frame(self):
+		return self.get_state()
+
+	cdef inline float* draw(self):
+		return self.get_state()

@@ -1,0 +1,93 @@
+__author__ = "Carl Allen"
+#import datetime as dt
+#cimport datetime as dt
+import cython
+import numpy as np
+import pyximport
+cimport numpy as np
+import interface as bbox
+cimport interface as bbox
+#from qgame import Game
+#from qgame cimport Game
+#import ipdb
+#cimport ipdb
+from cpython cimport bool
+
+cdef class Bboxgame:
+
+	cdef:
+		bool won
+		int action_count, max_moves
+		#datetime time = dt.datetime.now()
+		float last_score, action_score
+		float* state
+
+	def __init__(self, int max_moves=1214494):
+		self.won = False
+		self.action_count = 0
+		#self.time = dt.datetime.now()
+		self.last_score = 0
+		self.action_score = 0
+		self.reset()
+		self.max_moves = max_moves
+
+	def reset(self):
+		if bbox.is_level_loaded():
+			bbox.reset_level()
+		else:
+			bbox.load_level("../../../levels/train_level.data", verbose=1)
+		self.state = bbox.c_get_state() 
+
+	#@property
+	cdef char* name(self):
+		return "Bb"
+
+	#@property
+	cdef int nb_actions(self):
+		return bbox.get_num_of_actions()
+
+	#@property
+	cdef int get_action_count(self):
+		return self.action_count
+
+	cdef play(self, int action, bool report_action=False):
+
+		cdef:
+			bool printing = False	# SET PRINTING HERE *********************************************************************
+
+		self.action_count += 1
+		if report_action and printing:
+			print
+			print
+			#print ("PRE ACTN#%d: time=%fs   total score=%f" % (self.action_count, (dt.datetime.now() - self.time).seconds, bbox.get_score()))
+			print ("PRE ACTN#%d: total score=%f" % (self.action_count, bbox.get_score()))
+			#self.time = dt.datetime.now()
+		self.has_next = bbox.c_do_action(action)
+
+	cdef float* get_state(self):
+		#self.state = bbox.c_get_state()
+		return bbox.c_get_state() #self.state 
+
+	cdef float get_score(self):
+		self.action_score = bbox.get_score() - self.last_score
+		self.last_score = bbox.get_score()
+		return self.action_score
+
+	cdef int get_max_moves(self):
+		return self.max_moves
+
+	cdef float get_total_score(self):
+		return self.last_score
+
+	cdef bool is_over(self):
+		return (self.has_next == 0) or (self.action_count == self.get_max_moves()) 
+
+	cdef bool is_won(self):
+		cdef:
+			int final_score
+		final_score = bbox.get_score()
+		bbox.reset_level() # bbox.finish(verbose=1)
+
+		self.last_score = 0
+		self.action_count = 0
+		return final_score > 0 
