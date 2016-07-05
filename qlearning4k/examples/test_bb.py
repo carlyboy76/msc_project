@@ -2,7 +2,7 @@
 import time
 
 from keras.models import Sequential
-from keras.layers import Flatten, Dense
+from keras.layers import Flatten, Dense, Activation
 from myGames.bboxgame import Bboxgame
 from keras.optimizers import *
 from myAgent.agent import Agent
@@ -17,15 +17,36 @@ def log(message=""):
 	fo_log.write(message + "\n")
 	fo_log.close()
 
+
+#this is a new job - not running
+'''id = str(555) + ''
+log("\n"+ id + "-init: clip relu test...") #max_moves=1000,
+run_model(max_moves=100, nb_epoch=100, batch_size=50, epsilon=[1, 0.1], epsilon_rate=0.95, lr=0.2, act1='clipped_relu', act2='clipped_relu', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id + '1c')
+log(id)
+log("\n"+ id + "-init: clip relu test...") #max_moves=1000,
+run_model(max_moves=100, nb_epoch=100, batch_size=50, epsilon=[1, 0.1], epsilon_rate=0.95, lr=0.2, act1='relu', act2='relu', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id + '1')
+log(id + ' - all done')'''
+
+
 def run_model(max_moves=1214494, nb_epoch=2000, batch_size=100, epsilon=[1, 0.1], epsilon_rate=0.95, \
-		lr=0.2, act1='relu', act2='relu', hid1=100, hid2=100, error="mse", reg_param=0.01, id=""):
+		lr=0.2, act1='relu', max_val1=20, act2='relu', max_val2=20, hid1=100, hid2=100, error="mse", reg_param=0.01, id=""):
 
 	#ipdb.set_trace()
 	t0 = time.time()
 	model = Sequential()
 	model.add(Flatten(input_shape=(nb_frames, grid_size)))
-	model.add(Dense(hid1, activation=act1, W_regularizer=l2(reg_param), activity_regularizer=activity_l2(reg_param)))
-	model.add(Dense(hid2, activation=act2, W_regularizer=l2(reg_param), activity_regularizer=activity_l2(reg_param)))
+	#model.add(Dense(hid1, activation=act1, W_regularizer=l2(reg_param), activity_regularizer=activity_l2(reg_param)))
+	#model.add(Dense(hid2, activation=act2, W_regularizer=l2(reg_param), activity_regularizer=activity_l2(reg_param)))
+	model.add(Dense(hid1, W_regularizer=l2(reg_param), activity_regularizer=activity_l2(reg_param)))
+	if act1 == 'clip':
+		model.add(Activation('relu', max_value=max_val1))
+	else: 
+		model.add(Activation(act1))
+	model.add(Dense(hid2, W_regularizer=l2(reg_param), activity_regularizer=activity_l2(reg_param)))
+	if act2 == 'clip':
+		model.add(Activation('relu', max_value=max_val2))
+	else: 
+		model.add(Activation(act2))
 	model.add(Dense(4, W_regularizer=l2(reg_param), activity_regularizer=activity_l2(reg_param)))
 	model.compile(sgd(lr=lr), error)
 
@@ -52,10 +73,14 @@ def run_model(max_moves=1214494, nb_epoch=2000, batch_size=100, epsilon=[1, 0.1]
 
 	if type(epsilon)  in {tuple, list}:
 		log("{:^12}|{:^12}|{:^12.3f}{:^6.3f}{:^6.2f}|{:^10.2f}|{:^20}|{:>3.0f}:{:>02.0f}:{:>02.0f} |{:^6.2f}".format(\
-			nb_epoch, batch_size, epsilon[0], epsilon[1], epsilon_rate, lr, act1[:4] + '('+str(hid1)+')' + " + " + act2[:4] + '('+str(hid2)+')', hrs, mins, sec, reg_param))
+			nb_epoch, batch_size, epsilon[0], epsilon[1], epsilon_rate, lr, \
+			act1[:4] + '('+str(hid1)+')' + " + " + act2[:4] + '('+str(hid2)+')', \
+			hrs, mins, sec, reg_param))
 	else:
 		log("{:^12}|{:^12}|{:^12.3f}{:^6.3}{:^6}|{:^10.2f}|{:^20}|{:>3.0f}:{:>02.0f}:{:>02.0f} |{:^6.2f}".format(\
-			nb_epoch, batch_size, epsilon, "", "", lr, act1[:4] + '('+str(hid1)+')' + " + " + act2[:4] + '('+str(hid2)+')', hrs, mins, sec, reg_param))
+			nb_epoch, batch_size, epsilon, "", "", lr, \
+			act1[:4] + '('+str(hid1)+')' + " + " + act2[:4] + '('+str(hid2)+')', \
+			hrs, mins, sec, reg_param))
 
 
 ### SCHEDULE RUNS HERE ====================================================================================
@@ -131,6 +156,38 @@ log(id)
 run_model(max_moves=10000, nb_epoch=200, batch_size=100, epsilon=[1, 0.1], epsilon_rate=0.95, lr=0.2, act1='sigmoid', act2='sigmoid', hidden_size=50, error="mse", reg_param=0.1)
 log(id + ' - all done')'''
 
+#this is a new job - done
+'''id = str(111)
+log("\n"+ id + "-init: trying fewer layers...")
+run_model(max_moves=1000, nb_epoch=10000, batch_size=100, epsilon=[1, 0.1], epsilon_rate=0.95, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1)
+log(id)
+run_model(max_moves=1000, nb_epoch=10000, batch_size=100, epsilon=[1, 0.1], epsilon_rate=0.95, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1)
+log(id)
+run_model(max_moves=1000, nb_epoch=10000, batch_size=100, epsilon=[1, 0.1], epsilon_rate=0.95, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1)
+log(id + ' - all done')'''
+
+
+#this is a new job - done
+'''id = str(222) + ' -dble'
+log("\n"+ id + "-init: using relus...")
+run_model(max_moves=1000, nb_epoch=10000, batch_size=100, epsilon=[1, 0.1], epsilon_rate=0.95, lr=0.2, act1='relu', act2='relu', hid1=50, hid2=50, error="mse", reg_param=0.1)
+log(id)
+run_model(max_moves=1000, nb_epoch=10000, batch_size=100, epsilon=[1, 0.1], epsilon_rate=0.95, lr=0.2, act1='relu', act2='relu', hid1=50, hid2=50, error="mse", reg_param=0.1)
+log(id)
+run_model(max_moves=1000, nb_epoch=10000, batch_size=100, epsilon=[1, 0.1], epsilon_rate=0.95, lr=0.2, act1='relu', act2='relu', hid1=50, hid2=50, error="mse", reg_param=0.1)
+log(id + ' - all done')'''
+
+
+#this is a new job - done
+'''id = str(333) + ' -dble'
+log("\n"+ id + "-init: full run...") #max_moves=1000,
+run_model(nb_epoch=5, batch_size=100, epsilon=[1, 0.1], epsilon_rate=0.95, lr=0.2, act1='relu', act2='relu', hid1=50, hid2=50, error="mse", reg_param=0.1)
+log(id)
+run_model(nb_epoch=5, batch_size=100, epsilon=[1, 0.1], epsilon_rate=0.95, lr=0.2, act1='relu', act2='relu', hid1=50, hid2=50, error="mse", reg_param=0.1)
+log(id)
+run_model(nb_epoch=5, batch_size=100, epsilon=[1, 0.1], epsilon_rate=0.95, lr=0.2, act1='relu', act2='relu', hid1=50, hid2=50, error="mse", reg_param=0.1)
+log(id + ' - all done')'''
+
 #this is a new job - running
 '''id = str(777)
 log("\n"+ id + "-init: all moves - increasing epochs...")
@@ -143,62 +200,104 @@ log(id)
 log("\n"+ id + "-fini: all runs all done\n")'''
 
 #this is a new job - running
-'''id = str(111)
-log("\n"+ id + "-init: trying fewer layers...")
-run_model(max_moves=1000, nb_epoch=10000, batch_size=100, epsilon=[1, 0.1], epsilon_rate=0.95, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1)
-log(id)
-run_model(max_moves=1000, nb_epoch=10000, batch_size=100, epsilon=[1, 0.1], epsilon_rate=0.95, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1)
-log(id)
-run_model(max_moves=1000, nb_epoch=10000, batch_size=100, epsilon=[1, 0.1], epsilon_rate=0.95, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1)
-log(id + ' - all done')'''
-
-
-#this is a new job - running
-'''id = str(222) + ' -dble'
-log("\n"+ id + "-init: using relus...")
-run_model(max_moves=1000, nb_epoch=10000, batch_size=100, epsilon=[1, 0.1], epsilon_rate=0.95, lr=0.2, act1='relu', act2='relu', hid1=50, hid2=50, error="mse", reg_param=0.1)
-log(id)
-run_model(max_moves=1000, nb_epoch=10000, batch_size=100, epsilon=[1, 0.1], epsilon_rate=0.95, lr=0.2, act1='relu', act2='relu', hid1=50, hid2=50, error="mse", reg_param=0.1)
-log(id)
-run_model(max_moves=1000, nb_epoch=10000, batch_size=100, epsilon=[1, 0.1], epsilon_rate=0.95, lr=0.2, act1='relu', act2='relu', hid1=50, hid2=50, error="mse", reg_param=0.1)
-log(id + ' - all done')'''
-
-
-#this is a new job - running
-'''id = str(333) + ' -dble'
-log("\n"+ id + "-init: full run...") #max_moves=1000,
-run_model(nb_epoch=5, batch_size=100, epsilon=[1, 0.1], epsilon_rate=0.95, lr=0.2, act1='relu', act2='relu', hid1=50, hid2=50, error="mse", reg_param=0.1)
-log(id)
-run_model(nb_epoch=5, batch_size=100, epsilon=[1, 0.1], epsilon_rate=0.95, lr=0.2, act1='relu', act2='relu', hid1=50, hid2=50, error="mse", reg_param=0.1)
-log(id)
-run_model(nb_epoch=5, batch_size=100, epsilon=[1, 0.1], epsilon_rate=0.95, lr=0.2, act1='relu', act2='relu', hid1=50, hid2=50, error="mse", reg_param=0.1)
-log(id + ' - all done')'''
-
-#this is a new job - running
 '''id = str(444) + 'a'
 log("\n"+ id + "-init: 10k v long run...") #max_moves=1000,
 run_model(max_moves=1000, nb_epoch=50000, batch_size=100, epsilon=[1, 0.1], epsilon_rate=0.95, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id + '1')
 log(id)
+run_model(max_moves=1000, nb_epoch=50000, batch_size=100, epsilon=[1, 0.1], epsilon_rate=0.95, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id + '1')
+'''
+
+#this is a new job - running
+'''id = str(444) + 'b'
+log("\n"+ id + "-init: 10k v long run...") #max_moves=1000,
+run_model(max_moves=1000, nb_epoch=10000, batch_size=500, epsilon=[1, 0.1], epsilon_rate=0.95, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id)
+log(id + ' - all done' + '2')log(id)
 run_model(max_moves=1000, nb_epoch=10000, batch_size=500, epsilon=[1, 0.1], epsilon_rate=0.95, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id)
 log(id + ' - all done' + '2')'''
 
-#this is a new job - not yet running
-id = str(444) + 'b'
-log("\n"+ id + "-init: 10k v long run...") #max_moves=1000,
-run_model(max_moves=1000, nb_epoch=50000, batch_size=100, epsilon=[1, 0.1], epsilon_rate=0.95, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id + '1')
+#this is a new job - running - THESE WIL OVERWRITE SO NEED TO COPY
+'''id = str(555)
+log("\n"+ id + "-init: 50k - replicate 10k...") #max_moves=1000,
+run_model(max_moves=1000, nb_epoch=50000, batch_size=100, epsilon=[1, 0.1], epsilon_rate=0.95/5, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id + '1')
 log(id)
-run_model(max_moves=1000, nb_epoch=10000, batch_size=500, epsilon=[1, 0.1], epsilon_rate=0.95, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id)
-log(id + ' - all done' + '2')
+run_model(max_moves=1000, nb_epoch=50000, batch_size=100, epsilon=[1, 0.1], epsilon_rate=0.95/5, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id + '1')
+log(id)
+log(id + ' - all done')'''
+
+#this is a new job - running - THESE WIL OVERWRITE SO NEED TO COPY
+'''id = str(666)
+log("\n"+ id + "-init: 50k - eps to zero...") #max_moves=1000,
+run_model(max_moves=1000, nb_epoch=50000, batch_size=100, epsilon=[1, 0], epsilon_rate=0.95, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id+'1')
+run_model(max_moves=1000, nb_epoch=50000, batch_size=100, epsilon=[1, 0], epsilon_rate=0.95, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id+'2')
+log(id + ' - all done')'''
+
+#this is a new job - running
+'''id = str(666) + 'b'
+log("\n"+ id + "-init: 50k - eps to near zero...") #max_moves=1000,
+run_model(max_moves=1000, nb_epoch=50000, batch_size=100, epsilon=[1, 0.0001], epsilon_rate=0.95, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id+'1')
+run_model(max_moves=1000, nb_epoch=50000, batch_size=100, epsilon=[1, 0.0001], epsilon_rate=0.95, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id+'2')
+log(id + ' - all done')'''
+
+#this is a new job - running
+'''id = str(666) +'r'
+log("\n"+ id + "-init: 50k - eps to zero...") #max_moves=1000,
+run_model(max_moves=1000, nb_epoch=50000, batch_size=100, epsilon=[1, 0], epsilon_rate=0.95, lr=0.2, act1='relu', act2='relu', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id+'1')
+run_model(max_moves=1000, nb_epoch=50000, batch_size=100, epsilon=[1, 0], epsilon_rate=0.95, lr=0.2, act1='relu', act2='relu', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id+'2')
+log(id + ' - all done')'''
+
+#this is a new job - running
+'''id = str(1111)
+log("\n"+ id + "-init: 10k - eps 0.2 -> 0.0001 ...") 
+run_model(max_moves=1000, nb_epoch=10000, batch_size=100, epsilon=[0.2, 0.0001], epsilon_rate=0.90, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id+'_1')
+log(id)
+run_model(max_moves=1000, nb_epoch=10000, batch_size=100, epsilon=[0.2, 0.0001], epsilon_rate=0.90, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id+'_2')
+log(id)
+run_model(max_moves=1000, nb_epoch=10000, batch_size=100, epsilon=[0.2, 0.0001], epsilon_rate=0.90, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id+'_3')
+log(id + ' - all done')'''
+
+#this is a new job - running
+'''id = str(1112)
+log("\n"+ id + "-init: 10k - eps 0.5 -> 0.0001 ...") 
+run_model(max_moves=1000, nb_epoch=10000, batch_size=100, epsilon=[0.5, 0.0001], epsilon_rate=0.90, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id+'_1')
+log(id)
+run_model(max_moves=1000, nb_epoch=10000, batch_size=100, epsilon=[0.5, 0.0001], epsilon_rate=0.90, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id+'_2')
+log(id)
+run_model(max_moves=1000, nb_epoch=10000, batch_size=100, epsilon=[0.5, 0.0001], epsilon_rate=0.90, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id+'_3')
+log(id + ' - all done')'''
+
+#this is a new job - running
+'''id = str(1113)
+log("\n"+ id + "-init: minitest ...") 
+run_model(max_moves=1000, nb_epoch=100, batch_size=100, epsilon=[0.5, 0.0001], epsilon_rate=0.90, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id+'_1')
+log(id)
+run_model(max_moves=1000, nb_epoch=100, batch_size=100, epsilon=[0.5, 0.0001], epsilon_rate=0.90, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id+'_2')
+log(id)
+run_model(max_moves=1000, nb_epoch=100, batch_size=100, epsilon=[0.5, 0.0001], epsilon_rate=0.90, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id+'_3')
+log(id + ' - all done')'''
 
 
-'''id = '4343' #student.compute'
-log('quick test run - ' + id)
-run_model(max_moves=1000, nb_epoch=10, batch_size=1, epsilon=0.2, epsilon_rate=0.95, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=100, hid2=100, error="mse", reg_param=0.1, id = id + '1')
-log('quick test run done - ' + id)
-run_model(max_moves=1000, nb_epoch=10, batch_size=1, epsilon=0.2, epsilon_rate=0.95, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=100, hid2=100, error="mse", reg_param=0.1, id = id + '2')
-log('quick test run done - ' + id)
-run_model(max_moves=1000, nb_epoch=10, batch_size=1, epsilon=0.2, epsilon_rate=0.95, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=100, hid2=100, error="mse", reg_param=0.1, id = id + '3')
-log('quick test run done - ' + id)
-'''
+
+
+
+
+############## TRYING TO CLIP RELU  ###########################################
+
+
+#this is a new job - NOT running
+id = str(9999) +'rc'  # trying to clip relus
+log("\n"+ id + "-init: quick test - relu clipped...") #max_moves=1000,
+run_model(max_moves=100, nb_epoch=100, batch_size=50, epsilon=[1, 0.1], epsilon_rate=0.95, lr=0.2, act1='clip', max_val1=20, act2='clip', max_val2=20, hid1=50, hid2=50, error="mse", reg_param=0.1, id = id+'1')
+log(id + ' - all done')
+
+
+#this is a new job - not running
+'''id = str(555) + ''
+log("\n"+ id + "-init: clip relu test...") #max_moves=1000,
+run_model(max_moves=100, nb_epoch=100, batch_size=50, epsilon=[1, 0.1], epsilon_rate=0.95, lr=0.2, act1='clipped_relu', act2='clipped_relu', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id + '1c')
+log(id)
+log("\n"+ id + "-init: clip relu test...") #max_moves=1000,
+run_model(max_moves=100, nb_epoch=100, batch_size=50, epsilon=[1, 0.1], epsilon_rate=0.95, lr=0.2, act1='relu', act2='relu', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id + '1')
+log(id + ' - all done')'''
+
 
 ### =========================================================================================================

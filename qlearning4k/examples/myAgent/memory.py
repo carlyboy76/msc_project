@@ -24,9 +24,10 @@ class ExperienceReplay(Memory):
         self.memory = []
         self._memory_size = memory_size
 
-    def remember(self, s, a, r, s_prime, game_over):
+    def remember(self, s, a, r, s_prime, game_over, prob):
         self.input_shape = s.shape[1:]
-        self.memory.append(np.concatenate([s.flatten(), np.array(a).flatten(), np.array(r).flatten(), s_prime.flatten(), 1 * np.array(game_over).flatten()]))
+        self.memory.append(np.concatenate([s.flatten(), np.array(a).flatten(), np.array(r).flatten(), s_prime.flatten(), \
+		1 * np.array(game_over).flatten(), , np.array(prob).flatten()]))
         if self.memory_size > 0 and len(self.memory) > self.memory_size:
             self.memory.pop(0)
 
@@ -43,8 +44,10 @@ class ExperienceReplay(Memory):
         r = samples[:, input_dim + 1]
         S_prime = samples[:, input_dim + 2 : 2 * input_dim + 2]
         game_over = samples[:, 2 * input_dim + 2]
+        prob = samples[:, 2 * input_dim + 3]
         r = r.repeat(nb_actions).reshape((batch_size, nb_actions))
         game_over = game_over.repeat(nb_actions).reshape((batch_size, nb_actions))
+        probs = prob.repeat(nb_actions).reshape((batch_size, nb_actions))
         S = S.reshape((batch_size, ) + self.input_shape)
         S_prime = S_prime.reshape((batch_size, ) + self.input_shape)
         X = np.concatenate([S, S_prime], axis=0)
@@ -54,7 +57,7 @@ class ExperienceReplay(Memory):
         a = np.cast['int'](a)
         delta[np.arange(batch_size), a] = 1
         targets = (1 - delta) * Y[:batch_size] + delta * (r + gamma * (1 - game_over) * Qsa)
-        return S, targets
+        return S, targets, probs
 
     @property
     def memory_size(self):

@@ -125,7 +125,10 @@ class Agent:
 						if printing:
 							print "random",
 						q = model.predict(S)'''
+					q = model.predict(S)
+					expected_action = (a == int(np.argmax(q[0])))
 				else:
+					expected_action = True
 					q = model.predict(S)
 					#print q.shape
 					#print q[0]
@@ -135,6 +138,9 @@ class Agent:
 					'''
 					a = int(np.argmax(q[0]))
 					#if (self.action_count(game) % 100000) == 0:
+				prob = epsilon/game.nb_actions
+				if expected_action:
+					prob = 1 - epsilon + prob
 				game.play(a, self.report_action(game))
 				r = game.get_score()
 				#ipdb.set_trace(context=9)	# TRACING HERE *********************************************
@@ -185,12 +191,12 @@ class Agent:
 				#last_S = S
 
 				game_over = game.is_over()
-				transition = [S, a, r, S_prime, game_over]
+				transition = [S, a, r, S_prime, game_over, prob]
 				self.memory.remember(*transition)
 				S = S_prime
 				batch = self.memory.get_batch(model=model, batch_size=batch_size, gamma=gamma) #, print_it=False) #self.report_action(game))
 				if batch:
-					inputs, targets = batch
+					inputs, targets, probs = batch
 
 					#print("model.total_loss: ", model.total_loss)
 					'''if record_weights:

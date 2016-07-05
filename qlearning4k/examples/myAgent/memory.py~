@@ -24,7 +24,7 @@ class ExperienceReplay(Memory):
         self.memory = []
         self._memory_size = memory_size
 
-    def remember(self, s, a, r, s_prime, game_over):
+    def remember(self, s, a, r, s_prime, game_over, prob):
         self.input_shape = s.shape[1:]
         self.memory.append(np.concatenate([s.flatten(), np.array(a).flatten(), np.array(r).flatten(), s_prime.flatten(), 1 * np.array(game_over).flatten()]))
         if self.memory_size > 0 and len(self.memory) > self.memory_size:
@@ -102,7 +102,7 @@ class ExperienceReplay(Memory):
         if len(self.memory) < batch_size:
             return None
         samples = np.array(sample(self.memory, batch_size))
-'''	if print_it:
+	'''if print_it:
 		print #("[memory] batch_size: %d; memory size: %d" % (batch_size, len(self.memory)))
 		#print "samples: ", samples '''
         if not hasattr(self, 'batch_function'):
