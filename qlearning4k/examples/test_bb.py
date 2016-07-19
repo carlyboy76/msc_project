@@ -268,14 +268,58 @@ log(id + ' - all done')'''
 #this is a new job - running
 '''id = str(1113)
 log("\n"+ id + "-init: minitest ...") 
-run_model(max_moves=1000, nb_epoch=100, batch_size=100, epsilon=[0.5, 0.0001], epsilon_rate=0.90, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id+'_1')
-log(id)
+run_model(max_moves=100, nb_epoch=100, batch_size=100, epsilon=[0.5, 0.0001], epsilon_rate=0.90, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id+'_1')'''
+'''log(id)
 run_model(max_moves=1000, nb_epoch=100, batch_size=100, epsilon=[0.5, 0.0001], epsilon_rate=0.90, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id+'_2')
 log(id)
 run_model(max_moves=1000, nb_epoch=100, batch_size=100, epsilon=[0.5, 0.0001], epsilon_rate=0.90, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id+'_3')
 log(id + ' - all done')'''
 
+job=9
+id = str(1114)
+if job == 1:
+	log("\n"+ id + "-init:  eps") 
+	run_model(max_moves=1000, nb_epoch=10000, batch_size=100, epsilon=[1, 0], epsilon_rate=0.70, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id+'_1')
+	log(id)
+elif job == 2:
+	run_model(max_moves=1000, nb_epoch=10000, batch_size=100, epsilon=[1, 0], epsilon_rate=0.80, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id+'_2')
+	log(id)
+elif job == 3:
+	run_model(max_moves=1000, nb_epoch=10000, batch_size=100, epsilon=[1, 0], epsilon_rate=0.90, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id+'_3')
+	log(id + ' - all done')
 
+#this is a new job - running
+id = str(1115)
+if job == 4:
+	log("\n"+ id + "-init:  lr") 
+	run_model(max_moves=1000, nb_epoch=10000, batch_size=100, epsilon=[1, 0], epsilon_rate=0.80, lr=0.1, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id+'_1')
+	log(id)
+elif job == 5:
+	run_model(max_moves=1000, nb_epoch=10000, batch_size=100, epsilon=[1, 0], epsilon_rate=0.80, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id+'_2')
+	log(id)
+elif job == 6:
+	run_model(max_moves=1000, nb_epoch=10000, batch_size=100, epsilon=[1, 0], epsilon_rate=0.80, lr=0.3, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id+'_3')
+	log(id + ' - all done')
+
+#this is a new job - running
+id = str(1116)
+if job == 7:
+	log("\n"+ id + "-init:  bs=200") 
+	run_model(max_moves=1000, nb_epoch=5000, batch_size=200, epsilon=[1, 0], epsilon_rate=0.80, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id+'_1')
+	log(id + ' - all done')
+
+#this is a new job - running
+id = str(1117)
+if job == 8:
+	log("\n"+ id + "-init:  bs=400") 
+	run_model(max_moves=1000, nb_epoch=2500, batch_size=400, epsilon=[1, 0], epsilon_rate=0.80, lr=0.2, act1='sigmoid', act2='sigmoid', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id+'_1')
+	log(id + ' - all done')
+
+id = str(9999)
+if job == 9:
+	log("\n"+ id + "-init:  ruql??") 
+	run_model(max_moves=100, nb_epoch=100, batch_size=100, epsilon=[1, 0.01], epsilon_rate=0.80, lr=0.2, act1='relu', act2='relu', hid1=50, hid2=50, error="mse", reg_param=0.1, id = id+'_1')
+	log(id + ' - all done')
 
 
 
@@ -284,10 +328,10 @@ log(id + ' - all done')'''
 
 
 #this is a new job - NOT running
-id = str(9999) +'rc'  # trying to clip relus
+'''id = str(9999) +'rc'  # trying to clip relus
 log("\n"+ id + "-init: quick test - relu clipped...") #max_moves=1000,
 run_model(max_moves=100, nb_epoch=100, batch_size=50, epsilon=[1, 0.1], epsilon_rate=0.95, lr=0.2, act1='clip', max_val1=20, act2='clip', max_val2=20, hid1=50, hid2=50, error="mse", reg_param=0.1, id = id+'1')
-log(id + ' - all done')
+log(id + ' - all done')'''
 
 
 #this is a new job - not running

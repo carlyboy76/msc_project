@@ -27,13 +27,13 @@ class ExperienceReplay(Memory):
     def remember(self, s, a, r, s_prime, game_over, prob):
         self.input_shape = s.shape[1:]
         self.memory.append(np.concatenate([s.flatten(), np.array(a).flatten(), np.array(r).flatten(), s_prime.flatten(), \
-		1 * np.array(game_over).flatten(), , np.array(prob).flatten()]))
+		1 * np.array(game_over).flatten(), np.array(prob).flatten()]))
         if self.memory_size > 0 and len(self.memory) > self.memory_size:
             self.memory.pop(0)
 
-    def get_batch(self, model, batch_size, gamma=0.9): #, print_it=False):
+    def get_batch(self, model, batch_size, gamma=0.9, ruql=False): #, print_it=False):
         if self.fast:
-            return self.get_batch_fast(model, batch_size, gamma) #, print_it)
+            return self.get_batch_fast(model, batch_size, gamma, ruql=ruql) #, print_it)
         if len(self.memory) < batch_size:
             batch_size = len(self.memory)
         nb_actions = model.output_shape[-1]
@@ -57,6 +57,8 @@ class ExperienceReplay(Memory):
         a = np.cast['int'](a)
         delta[np.arange(batch_size), a] = 1
         targets = (1 - delta) * Y[:batch_size] + delta * (r + gamma * (1 - game_over) * Qsa)
+	print "here with probs"
+	print len(probs)
         return S, targets, probs
 
     @property
@@ -72,7 +74,7 @@ class ExperienceReplay(Memory):
     def reset_memory(self):
         self.memory = []
 
-    def set_batch_function(self, model, input_shape, batch_size, nb_actions, gamma):
+    def set_batch_function(self, model, input_shape, batch_size, nb_actions, gamma, ruql=False):
         input_dim = np.prod(input_shape)
         samples = K.placeholder(shape=(batch_size, input_dim * 2 + 3))
         S = samples[:, 0 : input_dim]
@@ -80,11 +82,22 @@ class ExperienceReplay(Memory):
         r = samples[:, input_dim + 1]
         S_prime = samples[:, input_dim + 2 : 2 * input_dim + 2]
         game_over = samples[:, 2 * input_dim + 2 : 2 * input_dim + 3]
+        probs = samples[:, 2 * input_dim + 3]
+
         r = K.reshape(r, (batch_size, 1))
         r = K.repeat(r, nb_actions)
         r = K.reshape(r, (batch_size, nb_actions))
         game_over = K.repeat(game_over, nb_actions)
         game_over = K.reshape(game_over, (batch_size, nb_actions))
+
+        #r = r.repeat(nb_actions).reshape((batch_size, nb_actions))
+        #game_over = game_over.repeat(nb_actions).reshape((batch_size, nb_actions))
+
+        probs = K.reshape(probs, (batch_size, 1))
+        probs = K.repeat(probs, nb_actions)
+        probs = K.reshape(probs, (batch_size, nb_actions))
+	print ('type(probs): ', type(probs))
+
         S = K.reshape(S, (batch_size, ) + input_shape)
         S_prime = K.reshape(S_prime, (batch_size, ) + input_shape)
         X = K.concatenate([S, S_prime], axis=0)
@@ -94,14 +107,26 @@ class ExperienceReplay(Memory):
         Qsa = K.repeat(Qsa, nb_actions)
         Qsa = K.reshape(Qsa, (batch_size, nb_actions))
         delta = K.reshape(self.one_hot(a, nb_actions), (batch_size, nb_actions))
-        targets = (1 - delta) * Y[:batch_size] + delta * (r + gamma * (1 - game_over) * Qsa)
-        self.batch_function = K.function(inputs=[samples], outputs=[S, targets, X, Y, Qsa, delta])
+
+	alpha = 0.1
+	delta_ruql = np.dot(delta, 1-np.power(1-alpha, 1/probs))
+	if ruql:
+		delta = delta_ruql
+		print "ruqling"
+
+	# CHANGING CODE HERE
+
+        #targets = (1 - delta) * Y[:batch_size] + delta * (r + gamma * (1 - game_over) * Qsa)
+        targets = Y[:batch_size] + delta_ruql * (r + gamma * (1 - game_over) * Qsa - Y[:batch_size])
+        self.batch_function = K.function(inputs=[samples], outputs=[S, targets, X, Y, Qsa, delta, probs])
+
+
 
     def  one_hot(self, seq, num_classes):
         import theano.tensor as T
         return K.equal(K.reshape(seq, (-1, 1)), T.arange(num_classes))
 
-    def get_batch_fast(self, model, batch_size, gamma): #, print_it=False):
+    def get_batch_fast(self, model, batch_size, gamma, ruql=False): #, print_it=False):
         if len(self.memory) < batch_size:
             return None
         samples = np.array(sample(self.memory, batch_size))
@@ -109,11 +134,11 @@ class ExperienceReplay(Memory):
 		print #("[memory] batch_size: %d; memory size: %d" % (batch_size, len(self.memory)))
 		#print "samples: ", samples '''
         if not hasattr(self, 'batch_function'):
-            self.set_batch_function(model, self.input_shape, batch_size, model.output_shape[-1], gamma)
-        S, targets, X, Y, Qsa, delta = self.batch_function([samples])
+            self.set_batch_function(model, self.input_shape, batch_size, model.output_shape[-1], gamma, ruql=ruql)
+        S, targets, X, Y, Qsa, delta, probs = self.batch_function([samples])
 	#print "[memory] X: "
 	#print X
 	#print "[memory] Y: ", Y
 	#print "[memory] Qsa: ", Qsa
 	#print "[memory] delta: ", delta
-        return S, targets
+        return S, targets, probs

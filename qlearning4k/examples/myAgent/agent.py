@@ -194,7 +194,7 @@ class Agent:
 				transition = [S, a, r, S_prime, game_over, prob]
 				self.memory.remember(*transition)
 				S = S_prime
-				batch = self.memory.get_batch(model=model, batch_size=batch_size, gamma=gamma) #, print_it=False) #self.report_action(game))
+				batch = self.memory.get_batch(model=model, batch_size=batch_size, gamma=gamma, ruql=True) #, print_it=False) #self.report_action(game))
 				if batch:
 					inputs, targets, probs = batch
 
@@ -215,7 +215,11 @@ class Agent:
 
 					#output = model.train_on_batch(inputs, targets)
 					#loss += float(output[0]) #model.train_on_batch(inputs, targets))
-					loss += float(model.train_on_batch(inputs, targets))
+					'''print "myAgent"
+					print 'inputs: ', type(inputs), "; ", inputs.shape 
+					print 'targets: ', type(targets), "; ", targets.shape
+					print 'probs: ', type(probs), "; ", probs.shape'''
+					loss += float(model.train_on_batch(inputs, targets, probs=probs))
 
 					#if self.report_action(game):
 					#	#print output

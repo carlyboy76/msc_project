@@ -256,12 +256,77 @@ all moves - sigm - double layer - more steps
 02/07/2016 21:40    |    1000    |  -9.85   |  425.54  | 3429 |   10000    |    100     |   0.500    0.000  0.90 |   0.20   |sigm(50) + sigm(50) |  8:22:26 | 0.10 
 1112 - all done
 
-
-
-
 1113-init: minitest ...
-                    | game moves |avg score |  error   |  WC  |   epochs   | batch size | epsiln frm .. to .. by |    lr    |     desciption     |  timer   | reg  
 04/07/2016 18:58    |    1000    |  -17.29  |  285.97  |  27  |    100     |    100     |   0.500    0.000  0.90 |   0.20   |sigm(50) + sigm(50) |  0:07:08 | 0.10 
 04/07/2016 19:05    |    1000    |  -0.62   |  544.02  |  49  |    100     |    100     |   0.500    0.000  0.90 |   0.20   |sigm(50) + sigm(50) |  0:06:48 | 0.10 
 04/07/2016 19:12    |    1000    |  -10.03  |  273.27  |  33  |    100     |    100     |   0.500    0.000  0.90 |   0.20   |sigm(50) + sigm(50) |  0:06:47 | 0.10 
 1113 - all done
+
+
+9999rc-init: quick test - relu clipped...
+
+
+
+1113-init: minitest ...
+
+                    | game moves |avg score |  error   |  WC  |   epochs   | batch size | epsiln frm .. to .. by |    lr    |     desciption     |  timer   | reg  
+05/07/2016 19:35    |    100     |   0.76   |   0.21   |  19  |    100     |    100     |   0.500    0.000  0.90 |   0.20   |sigm(50) + sigm(50) |  0:00:25 | 0.10 
+1113 - all done
+
+                    | game moves |avg score |  error   |  WC  |   epochs   | batch size | epsiln frm .. to .. by |    lr    |     desciption     |  timer   | reg  
+05/07/2016 19:58    |    100     |  -2.60   |   0.88   |  22  |    100     |    100     |   0.500    0.000  0.90 |   0.20   |sigm(50) + sigm(50) |  0:00:34 | 0.10 
+1113 - all done
+
+
+
+
+1113-init: minitest ...
+
+
+1113-init: minitest ...
+
+
+1113-init: minitest ...
+
+
+1113-init: minitest ...
+
+
+1113-init: minitest ...
+
+
+1113-init: minitest ...
+
+
+1113-init: minitest ...
+
+
+1113-init: minitest ...
+
+
+1113-init: minitest ...
+
+
+1113-init: minitest ...
+
+
+1113-init: minitest ...
+
+
+1113-init: minitest ...
+
+
+1113-init: minitest ...
+
+
+1113-init: minitest ...
+
+
+1113-init: minitest ...
+
+                    | game moves |avg score |  error   |  WC  |   epochs   | batch size | epsiln frm .. to .. by |    lr    |     desciption     |  timer   | reg  
+06/07/2016 02:09    |    100     |  -0.86   |   0.78   |  15  |    100     |    100     |   0.500    0.000  0.90 |   0.20   |sigm(50) + sigm(50) |  0:00:30 | 0.10 
+1113 - all done
+
+1114-init:  eps
+
